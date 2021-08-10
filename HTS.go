@@ -51,10 +51,18 @@ func (hts HTS) GetExtension(path string) string {
 func (hts HTS) IsFileExists(path string) (bool, string) {
 	filelocation := hts.HomeDir + path
 	_, err := os.Stat(filelocation)
+
+	//if the index.html not found then use our Deafult index page--This is used to display the directoty does not have index.html file
+	if err != nil && path == "/index.html" {
+		return true, "default.html"
+	}
+
+	//return false when file not found
 	if err != nil {
 		return false, ""
 	}
 
+	//return true if the file existss
 	return true, filelocation
 
 }
@@ -67,13 +75,21 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 		http.Error(response, "Method Not Alowed", http.StatusMethodNotAllowed)
 	}
 
+	//Form Empty request Url have the value of /
 	//Get path from the URL
 	url := request.URL.Path
+
+	//check for the request to root of directory if it is then apppend index.html as url string
+	if url == "/" {
+		url = url + "index.html"
+	}
+
 	fmt.Printf("\nMethod:%s From:%v Path:%s", request.Method, request.RemoteAddr, url)
 
 	//Get the status of file exists
 	result, Location := hts.IsFileExists(url)
-
+	//result := true
+	//Location := hts.HomeDir + "index.html"
 	//If file Not exists
 	if !result {
 		file, _ := os.Open("NotFound.html")
@@ -84,6 +100,7 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 		http.Error(response, "", 404)
 	} else { //If file Exists
 		extension := hts.GetExtension(Location)
+		//extension := "html"
 		contenttype := hts.GetContentType(extension)
 		response.Header().Set("Content-Type", contenttype)
 		file, _ := os.Open(Location)

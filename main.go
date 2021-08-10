@@ -39,7 +39,8 @@ func main() {
 	hts := HTS{HomeDir: *homedir, Port: *port}
 
 	//Only Handler for get all Paths
-	go mux.HandleFunc("/", hts.HandleHome)
+
+	mux.HandleFunc("/", hts.HandleHome)
 	fmt.Print("Server Listening !\nRoot Directory:", *homedir)
 
 	//Listen and server
