@@ -54,7 +54,7 @@ func (hts HTS) IsFileExists(path string) (bool, string) {
 
 	//if the index.html not found then use our Deafult index page--This is used to display the directoty does not have index.html file
 	if err != nil && path == "/index.html" {
-		return true, "default.html"
+		return true, "Default.html"
 	}
 
 	//return false when file not found
