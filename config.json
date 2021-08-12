@@ -1,0 +1,6 @@
+{
+    "Restrictedroutes": [
+        "/route1",
+        "/route2"
+    ]
+}

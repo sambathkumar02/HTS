@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -14,6 +16,12 @@ type HTS struct {
 	IP      string
 	HomeDir string
 	//logger  Logger
+	ConfigData Config
+}
+
+//structure for getting data from configuration file
+type Config struct {
+	Restricted []string `json:"Restrictedroutes"` //use exact spelling used in json file
 }
 
 //Method for Identifying content type of the file with extension
@@ -54,7 +62,7 @@ func (hts HTS) IsFileExists(path string) (bool, string) {
 
 	//if the index.html not found then use our Deafult index page--This is used to display the directoty does not have index.html file
 	if err != nil && path == "/index.html" {
-		return true, "Default.html"
+		return true, "/Static/Default.html"
 	}
 
 	//return false when file not found
@@ -65,6 +73,38 @@ func (hts HTS) IsFileExists(path string) (bool, string) {
 	//return true if the file existss
 	return true, filelocation
 
+}
+
+//Parsing ACL.json for access control of routes
+func (hts HTS) ParseConfig() {
+	ConfigFile, err := os.Open("config.json")
+	if err != nil {
+		fmt.Print("\n Cannot Open config.json!")
+	}
+
+	//var data Config
+	//var data map[string]interface{}
+	jsondata, _ := ioutil.ReadAll(ConfigFile)
+	json.Unmarshal(jsondata, &hts.ConfigData)
+	fmt.Print(hts.ConfigData.Restricted)
+
+}
+
+//Method for finding url in Restricted List
+func (hts HTS) IsIn(query string, list []string) bool {
+
+	for _, i := range list {
+		if i == query {
+
+			return true
+		}
+	}
+	return false
+}
+
+//method for finding a authorized url
+func (hts HTS) IsAuthorizedRoute(route string) bool {
+	return hts.IsIn(route, hts.ConfigData.Restricted)
 }
 
 //Main handler Function for / route
@@ -86,6 +126,11 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 
 	fmt.Printf("\nMethod:%s From:%v Path:%s", request.Method, request.RemoteAddr, url)
 
+	//check if the url authorized
+	if hts.IsAuthorizedRoute(url) {
+		http.Error(response, "Unauthorised", http.StatusUnauthorized)
+
+	}
 	//Get the status of file exists
 	result, Location := hts.IsFileExists(url)
 	//result := true
@@ -97,6 +142,7 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 		file.Seek(0, 0)
 		io.Copy(response, file)
 
+		defer file.Close()
 		http.Error(response, "", 404)
 	} else { //If file Exists
 		extension := hts.GetExtension(Location)

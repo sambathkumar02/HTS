@@ -37,6 +37,7 @@ func main() {
 
 	//Creating HTS server object
 	hts := HTS{HomeDir: *homedir, Port: *port}
+	hts.ParseConfig()
 
 	//Only Handler for get all Paths
 
