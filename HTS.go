@@ -62,7 +62,7 @@ func (hts HTS) IsFileExists(path string) (bool, string) {
 
 	//if the index.html not found then use our Deafult index page--This is used to display the directoty does not have index.html file
 	if err != nil && path == "/index.html" {
-		return true, "/Static/Default.html"
+		return true, "Static/Default.html"
 	}
 
 	//return false when file not found
@@ -77,16 +77,16 @@ func (hts HTS) IsFileExists(path string) (bool, string) {
 
 //Parsing ACL.json for access control of routes
 func (hts HTS) ParseConfig() {
+	fmt.Println("Reading Config File")
 	ConfigFile, err := os.Open("config.json")
 	if err != nil {
 		fmt.Print("\n Cannot Open config.json!")
 	}
-
+	defer ConfigFile.Close()
 	//var data Config
 	//var data map[string]interface{}
 	jsondata, _ := ioutil.ReadAll(ConfigFile)
 	json.Unmarshal(jsondata, &hts.ConfigData)
-	fmt.Print(hts.ConfigData.Restricted)
 
 }
 
@@ -137,7 +137,7 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 	//Location := hts.HomeDir + "index.html"
 	//If file Not exists
 	if !result {
-		file, _ := os.Open("NotFound.html")
+		file, _ := os.Open("Static/NotFound.html")
 		defer file.Close()
 		file.Seek(0, 0)
 		io.Copy(response, file)
@@ -149,6 +149,7 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 		//extension := "html"
 		contenttype := hts.GetContentType(extension)
 		response.Header().Set("Content-Type", contenttype)
+		response.WriteHeader(http.StatusOK)
 		file, _ := os.Open(Location)
 		defer file.Close()
 

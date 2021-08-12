@@ -41,7 +41,7 @@ func main() {
 
 	//Only Handler for get all Paths
 
-	mux.HandleFunc("/", hts.HandleHome)
+	go mux.HandleFunc("/", hts.HandleHome)
 	fmt.Print("Server Listening !\nRoot Directory:", *homedir)
 
 	//Listen and server
