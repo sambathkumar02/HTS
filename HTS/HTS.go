@@ -14,16 +14,17 @@ import (
 
 //Struct for HTS Server
 type HTS struct {
-	Port    string
-	IP      string
-	HomeDir string
-	//loggerObject Logger.Logger
-	ConfigData Config
+	Port         string
+	IP           string
+	HomeDir      string
+	LoggerObject Logger.Logger
+	ConfigData   Config
 }
 
 //structure for getting data from configuration file
 type Config struct {
 	Restricted []string `json:"Restrictedroutes"` //use exact spelling used in json file
+
 }
 
 //Method for Identifying content type of the file with extension
@@ -52,7 +53,7 @@ func (hts HTS) GetContentType(extension string) string {
 
 //Method for Getting extension from file URL
 func (hts HTS) GetExtension(path string) string {
-	data := strings.Split(path, ".")
+	data := strings.Split(path, ".") //Need to Fix directories having . in their path
 	return data[1]
 
 }
@@ -126,12 +127,6 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 		url = url + "index.html"
 	}
 
-	//Log string
-	LogValue := fmt.Sprintf("Method:%s From:%v Path:%s", request.Method, request.RemoteAddr, url)
-
-	logobj := Logger.Logger{}
-	go logobj.Log(LogValue)
-
 	//check if the url authorized
 	if hts.IsAuthorizedRoute(url) {
 		http.Error(response, "Unauthorised", http.StatusUnauthorized)
@@ -144,6 +139,11 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 	//If file Not exists
 	if !result {
 		file, _ := os.Open("Static/NotFound.html")
+
+		LogValue := fmt.Sprintf("Method:%s From:%v Path:%s Response:404", request.Method, request.RemoteAddr, url)
+
+		go hts.LoggerObject.Log(LogValue)
+
 		defer file.Close()
 		file.Seek(0, 0)
 		response.WriteHeader(http.StatusNotFound)
@@ -152,12 +152,17 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 		defer file.Close()
 
 	} else { //If file Exists
+
 		extension := hts.GetExtension(Location)
 		//extension := "html"
 		contenttype := hts.GetContentType(extension)
+
 		response.Header().Set("Content-Type", contenttype)
 		response.WriteHeader(http.StatusOK)
 		file, _ := os.Open(Location)
+		LogValue := fmt.Sprintf("Method:%s From:%v Path:%s Response:200", request.Method, request.RemoteAddr, url)
+
+		go hts.LoggerObject.Log(LogValue)
 		defer file.Close()
 
 		//setting the cursor to start of the file

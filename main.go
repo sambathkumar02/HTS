@@ -43,11 +43,16 @@ func main() {
 	//Configurations for Logging
 	LogFileName := "request.log"
 	LoggerObj.LogFilePath = LogFileName
-	file := LoggerObj.CreateLogFile()
+	file, err := LoggerObj.CreateLogFile()
+	if err != nil {
+		fmt.Print("Opening Log File Failed!")
+		os.Exit(0)
+	}
+	defer file.Close()
 	LoggerObj.LogFile = file
 
 	//Creating HTS server object
-	hts := HTS.HTS{HomeDir: *homedir, Port: *port}
+	hts := HTS.HTS{HomeDir: *homedir, Port: *port, LoggerObject: LoggerObj}
 	hts.ParseConfig()
 
 	//Only Handler for get all Paths
