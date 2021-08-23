@@ -20,6 +20,10 @@ func (logger Logger) CreateLogFile() os.File {
 	if err != nil {
 		fmt.Print("Unable to open Log file!")
 	}
+
+	//set output of log to created file
+	log.SetOutput(&logger.LogFile)
+
 	return *file
 
 }
@@ -27,8 +31,6 @@ func (logger Logger) CreateLogFile() os.File {
 //Method to be Called from HTS to Log a Request
 func (logger Logger) Log(LogData string) {
 
-	//set output of log to created file
-	log.SetOutput(&logger.LogFile)
 	//Append log to file
 	log.Print(LogData)
 

@@ -11,6 +11,8 @@ import (
 	"github.com/sambathkumar02/HTS/Logger"
 )
 
+var LoggerObj = Logger.Logger{}
+
 func main() {
 
 	//Handling Command Line Flags Port,Homedirectory
@@ -40,9 +42,9 @@ func main() {
 
 	//Configurations for Logging
 	LogFileName := "request.log"
-	LoggerObject := Logger.Logger{LogFilePath: LogFileName}
-	file := LoggerObject.CreateLogFile()
-	LoggerObject.LogFile = file
+	LoggerObj.LogFilePath = LogFileName
+	file := LoggerObj.CreateLogFile()
+	LoggerObj.LogFile = file
 
 	//Creating HTS server object
 	hts := HTS.HTS{HomeDir: *homedir, Port: *port}

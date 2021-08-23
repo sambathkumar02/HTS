@@ -17,7 +17,7 @@ type HTS struct {
 	Port    string
 	IP      string
 	HomeDir string
-	//logger     Logger.Logger
+	//loggerObject Logger.Logger
 	ConfigData Config
 }
 
