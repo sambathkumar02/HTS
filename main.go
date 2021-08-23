@@ -6,6 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/sambathkumar02/HTS/HTS"
+	"github.com/sambathkumar02/HTS/Logger"
 )
 
 func main() {
@@ -35,8 +38,14 @@ func main() {
 	//Server Multiplexer for Handling Conenctions
 	mux := http.NewServeMux()
 
+	//Configurations for Logging
+	LogFileName := "request.log"
+	LoggerObject := Logger.Logger{LogFilePath: LogFileName}
+	file := LoggerObject.CreateLogFile()
+	LoggerObject.LogFile = file
+
 	//Creating HTS server object
-	hts := HTS{HomeDir: *homedir, Port: *port}
+	hts := HTS.HTS{HomeDir: *homedir, Port: *port}
 	hts.ParseConfig()
 
 	//Only Handler for get all Paths

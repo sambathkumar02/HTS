@@ -1,4 +1,4 @@
-package main
+package HTS
 
 import (
 	"encoding/json"
@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/sambathkumar02/HTS/Logger"
 )
 
 //Struct for HTS Server
@@ -15,7 +17,7 @@ type HTS struct {
 	Port    string
 	IP      string
 	HomeDir string
-	//logger  Logger
+	//logger     Logger.Logger
 	ConfigData Config
 }
 
@@ -124,7 +126,11 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 		url = url + "index.html"
 	}
 
-	fmt.Printf("\nMethod:%s From:%v Path:%s", request.Method, request.RemoteAddr, url)
+	//Log string
+	LogValue := fmt.Sprintf("Method:%s From:%v Path:%s", request.Method, request.RemoteAddr, url)
+
+	logobj := Logger.Logger{}
+	go logobj.Log(LogValue)
 
 	//check if the url authorized
 	if hts.IsAuthorizedRoute(url) {
@@ -140,10 +146,11 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 		file, _ := os.Open("Static/NotFound.html")
 		defer file.Close()
 		file.Seek(0, 0)
+		response.WriteHeader(http.StatusNotFound)
 		io.Copy(response, file)
 
 		defer file.Close()
-		http.Error(response, "", 404)
+
 	} else { //If file Exists
 		extension := hts.GetExtension(Location)
 		//extension := "html"
