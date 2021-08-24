@@ -54,6 +54,10 @@ func (hts HTS) GetContentType(extension string) string {
 //Method for Getting extension from file URL
 func (hts HTS) GetExtension(path string) string {
 	data := strings.Split(path, ".") //Need to Fix directories having . in their path
+
+	if len(data) > 2 {
+		return data[len(data)-1]
+	}
 	return data[1]
 
 }
