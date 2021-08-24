@@ -69,7 +69,7 @@ func (hts HTS) IsFileExists(path string) (bool, string) {
 
 	//if the index.html not found then use our Deafult index page--This is used to display the directoty does not have index.html file
 	if err != nil && path == "/index.html" {
-		return true, "Static/Default.html"
+		return true, "/etc/HTS/Static/Default.html"
 	}
 
 	//return false when file not found
@@ -142,7 +142,7 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 	//Location := hts.HomeDir + "index.html"
 	//If file Not exists
 	if !result {
-		file, _ := os.Open("Static/NotFound.html")
+		file, _ := os.Open("/etc/HTS/Static/NotFound.html")
 
 		LogValue := fmt.Sprintf("Method:%s From:%v Path:%s Response:404", request.Method, request.RemoteAddr, url)
 

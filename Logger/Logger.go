@@ -17,7 +17,7 @@ type Logger struct {
 //Method for creating a Log file in append mode and return the pointer
 func (logger Logger) CreateLogFile() (os.File, error) {
 	//Open file in append mode
-	file, err := os.OpenFile("request.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("/etc/HTS/hts.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
 		fmt.Print("Unable to open Log file!")
 		return *file, errors.New("Log File Opening Failed")
