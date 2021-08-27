@@ -1,10 +1,11 @@
 # HTS 
 
-<img src=Static/Images/Logo/hts_logo.png width=550 height=550 style="text-align:center">
+<img src=Static/Images/Logo/hts_logo.png width=350 height=350 > 
+ 
+   # HTS 
 
 A Concurrent HTTP static server using Golang. Serve Static files like HTML,CSS,Js,Images,Videos ,ect. using HTTP. It is Concurrent and Highly Scalable.Try now!
 
----
 
  
 
