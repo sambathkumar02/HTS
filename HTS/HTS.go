@@ -178,3 +178,7 @@ func (hts HTS) HandleHome(response http.ResponseWriter, request *http.Request) {
 	}
 
 }
+
+func TestCICD() {
+
+}

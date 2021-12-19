@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #Binary Hts file
 sudo cp hts /bin/hts
 
